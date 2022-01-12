@@ -1,42 +1,12 @@
-from .password_handling import password_check, hash_password
+from .register import create_users_table, insert_new_user, password_check, hash_password
 from flask import Flask
 from flask_restful import Resource, Api
 import os
-import sqlite3
-import logging
 
 
-conn = sqlite3.connect('database.db', check_same_thread=False)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(12)
 api = Api(app)
-
-
-# DB users table creation
-def create_users_table():
-    conn.execute("CREATE TABLE IF NOT EXISTS users (username, password)")
-    conn.commit()
-
-
-# Used to insert new user
-def insert_new_user(username, password):
-    params = (username, hash_password(password).decode())
-
-    try:
-        user_record = conn.execute("SELECT rowid FROM users WHERE username = ?", (username,))
-        user_exists = user_record.fetchall()
-        # If user doesn't exist insert record
-        if not user_exists:
-            conn.execute("""INSERT INTO users (username, password)
-                                     VALUES(?,?)""", params)
-            conn.commit()
-            return True
-        else:
-            return False
-
-    except Exception as e:
-        logging.exception(e)
-        return False
 
 
 class Registration(Resource):
@@ -52,5 +22,11 @@ class Registration(Resource):
             return {'error': 'Invalid Password'}, 500
 
 
+class Login(Resource):
+    def get(self, username, passowrd):
+        return {"MSG": "Welcome"}
+
+
 api.add_resource(Registration, '/register/<string:username>/<string:passowrd>')
+api.add_resource(Login, '/login/<string:username>/<string:passowrd>')
 
