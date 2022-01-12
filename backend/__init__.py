@@ -65,8 +65,25 @@ class Chat(Resource):
             return {"Error": "No Message Found"}, 401
 
 
+class Tweet(Resource):
+    def post(self):
+        data = request.get_json()
+        message = data['message']
+
+
+    def get(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
+
+
 api.add_resource(Registration, '/register')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(Chat, '/chat/<string:username>')
+api.add_resource(Chat, '/tweet')
 
