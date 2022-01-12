@@ -1,6 +1,6 @@
 from .login import check_credentials
 from .register import create_users_table, insert_new_user, password_check, hash_password
-from flask import Flask
+from flask import Flask, request
 from flask_session import Session
 from flask_restful import Resource, Api
 import os
@@ -16,7 +16,11 @@ Session(app)
 class Registration(Resource):
     create_users_table()
 
-    def post(self, username, password):
+    def post(self):
+        credentials = request.get_json()
+        username = credentials['username']
+        password = credentials['password']
+
         if password_check(password):
             if insert_new_user(username, password):
                 return {'username': username}, 201
@@ -27,13 +31,27 @@ class Registration(Resource):
 
 
 class Login(Resource):
-    def post(self, username, password):
+    def post(self):
+        credentials = request.get_json()
+        username = credentials['username']
+        password = credentials['password']
+
         if check_credentials(username, password):
             return {"Message": "Login Successful"}, 200
         else:
-            return {'error': 'Invalid Password'}, 401
+            return {'error': 'Login Unsuccessful'}, 401
 
 
-api.add_resource(Registration, '/register/<string:username>/<string:password>')
-api.add_resource(Login, '/login/<string:username>/<string:password>')
+class Chat(Resource):
+    def post(self, sender, receiver):
+        message = request.get_json()
+        print(message)
+
+    def get(self, receiver, sender):
+        pass
+
+
+api.add_resource(Registration, '/register')
+api.add_resource(Login, '/login')
+api.add_resource(Chat, '/chat/<string:sender>/<string:receiver>')
 

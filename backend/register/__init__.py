@@ -13,12 +13,6 @@ def create_users_table():
     conn.commit()
 
 
-# DB users table creation
-def create_users_table():
-    conn.execute("CREATE TABLE IF NOT EXISTS users (username, password)")
-    conn.commit()
-
-
 # Used to insert new user
 def insert_new_user(username, password):
     params = (username, hash_password(password).decode())
