@@ -9,10 +9,10 @@ conn = sqlite3.connect('database.db', check_same_thread=False)
 # DB users table creation
 def create_messages_table():
     # Drops table if it already exists
-    conn.execute("DROP TABLE IF EXISTS messages")
-    conn.execute("CREATE TABLE IF NOT EXISTS messages (sender, receiver, message, read, date)")
+    # conn.execute("DROP TABLE IF EXISTS messages")
+    conn.execute("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, sender, receiver, message, read, date)")
     conn.commit()
-    
+
 
 def send_message(receiver, message):
     create_messages_table()
@@ -27,6 +27,29 @@ def send_message(receiver, message):
             return True
         else:
             return False
+    except Exception as e:
+        logging.exception(e)
+        return False
+
+
+def set_messages_to_read(messages):
+    for msg in messages:
+        params = (datetime.datetime.now(), msg[0])
+        conn.execute("UPDATE messages SET read=1, date=? WHERE id=?", params)
+        conn.commit()
+
+
+def check_unread_msgs(sender):
+    try:
+        receiver = session.get('username')
+        # If user doesn't exist insert record
+        if receiver:
+            unread_messages = conn.execute("SELECT * FROM messages WHERE sender = ? AND receiver = ? AND read = 0",
+                                           (sender, receiver))
+            messages = unread_messages.fetchall()
+            set_messages_to_read(messages)
+            return messages
+
     except Exception as e:
         logging.exception(e)
         return False
