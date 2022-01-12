@@ -1,6 +1,7 @@
 from .login import check_credentials
-from .register import create_users_table, insert_new_user, password_check, hash_password
-from flask import Flask, request
+from .register import insert_new_user, password_check, hash_password
+from .chat import send_message
+from flask import Flask, request, session
 from flask_session import Session
 from flask_restful import Resource, Api
 import os
@@ -14,8 +15,6 @@ Session(app)
 
 
 class Registration(Resource):
-    create_users_table()
-
     def post(self):
         credentials = request.get_json()
         username = credentials['username']
@@ -42,10 +41,16 @@ class Login(Resource):
             return {'error': 'Login Unsuccessful'}, 401
 
 
+class Logout(Resource):
+    def post(self):
+       session.clear()
+
+
 class Chat(Resource):
-    def post(self, sender, receiver):
-        message = request.get_json()
-        print(message)
+    def post(self, receiver):
+        data = request.get_json()
+        message = data['message']
+        send_message(receiver, message)
 
     def get(self, receiver, sender):
         pass
@@ -53,5 +58,6 @@ class Chat(Resource):
 
 api.add_resource(Registration, '/register')
 api.add_resource(Login, '/login')
-api.add_resource(Chat, '/chat/<string:sender>/<string:receiver>')
+api.add_resource(Logout, '/logout')
+api.add_resource(Chat, '/chat/<string:receiver>')
 

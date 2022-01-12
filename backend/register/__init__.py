@@ -8,13 +8,14 @@ conn = sqlite3.connect('database.db', check_same_thread=False)
 # DB users table creation
 def create_users_table():
     # Drops table if it already exists
-    conn.execute("DROP TABLE users")
+    conn.execute("DROP TABLE IF EXISTS users")
     conn.execute("CREATE TABLE IF NOT EXISTS users (username, password)")
     conn.commit()
 
 
 # Used to insert new user
 def insert_new_user(username, password):
+    create_users_table()
     params = (username, hash_password(password).decode())
 
     try:

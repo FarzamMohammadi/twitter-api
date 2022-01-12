@@ -3,7 +3,7 @@ from main import app
 import sqlite3
 
 conn = sqlite3.connect('database.db', check_same_thread=False)
-conn.execute("DROP TABLE users")
+conn.execute("DROP TABLE IF EXISTS users")
 conn.execute("CREATE TABLE IF NOT EXISTS users (username, password)")
 conn.commit()
 
