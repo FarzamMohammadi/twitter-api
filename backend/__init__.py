@@ -1,13 +1,12 @@
 from .login import check_credentials
 from .register import create_users_table, insert_new_user, password_check, hash_password
-from flask import Flask, session
+from flask import Flask
 from flask_session import Session
 from flask_restful import Resource, Api
 import os
 
 
 app = Flask(__name__)
-SESSION_TYPE = 'null'
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = os.urandom(12)
 api = Api(app)
