@@ -22,8 +22,8 @@ def insert_new_user(username, password):
     params = (username, hash_password(password).decode())
 
     try:
-        user_record = conn.execute("SELECT rowid FROM users WHERE username = ?", (username,))
-        user_exists = user_record.fetchall()
+        user_record = conn.execute("SELECT * FROM users WHERE username = ?", (username,))
+        user_exists = user_record.fetchone()
         # If user doesn't exist insert record
         if not user_exists:
             conn.execute("""INSERT INTO users (username, password)

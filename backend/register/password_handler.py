@@ -2,32 +2,32 @@ import bcrypt
 
 
 # Password validation
-def password_check(passowrd):
+def password_check(password):
 
     SpecialSym = ['$', '@', '#', '%', '/']
     val = True
 
-    if len(passowrd) < 6:
+    if len(password) < 6:
         print('length should be at least 6')
         val = False
 
-    if len(passowrd) > 20:
+    if len(password) > 20:
         print('length should be not be greater than 8')
         val = False
 
-    if not any(char.isdigit() for char in passowrd):
+    if not any(char.isdigit() for char in password):
         print('Password should have at least one numeral')
         val = False
 
-    if not any(char.isupper() for char in passowrd):
+    if not any(char.isupper() for char in password):
         print('Password should have at least one uppercase letter')
         val = False
 
-    if not any(char.islower() for char in passowrd):
+    if not any(char.islower() for char in password):
         print('Password should have at least one lowercase letter')
         val = False
 
-    if not any(char in SpecialSym for char in passowrd):
+    if not any(char in SpecialSym for char in password):
         print('Password should have at least one of the symbols $@#')
         val = False
     if val:
