@@ -1,3 +1,4 @@
+import bcrypt
 from flask import Flask
 from flask_restful import Resource, Api
 import os
@@ -11,14 +12,19 @@ app.config['SECRET_KEY'] = os.urandom(12)
 api = Api(app)
 
 
+# DB users table creation
 def create_users_table():
     conn.execute("""CREATE TABLE IF NOT EXISTS users
                      (username, password)""")
     conn.commit()
 
 
+# Used to insert new user
 def insert_new_user(username, password):
-    params = (username, password)
+    # Password encryption
+    hashed_pass = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(12))
+    params = (username, hashed_pass.decode())
+
     try:
         conn.execute("""INSERT INTO users (username, password)
                                  VALUES(?,?)""", params)
@@ -28,6 +34,7 @@ def insert_new_user(username, password):
         pass
 
 
+# Password validation
 def password_check(passowrd):
 
     SpecialSym = ['$', '@', '#', '%', '/']
