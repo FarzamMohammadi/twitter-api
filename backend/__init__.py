@@ -1,11 +1,11 @@
 from .login import check_credentials
 from .register import insert_new_user, password_check, hash_password
 from .chat import send_message, check_unread_msgs
+from .tweet import create_tweet, get_user_tweets, update_tweet, delete_tweet
 from flask import Flask, request, session
 from flask_session import Session
 from flask_restful import Resource, Api
 import os
-
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -43,7 +43,7 @@ class Login(Resource):
 
 class Logout(Resource):
     def post(self):
-       session.clear()
+        session.clear()
 
 
 class Chat(Resource):
@@ -68,22 +68,41 @@ class Chat(Resource):
 class Tweet(Resource):
     def post(self):
         data = request.get_json()
-        message = data['message']
-
+        user_tweet = data['tweet']
+        if len(user_tweet) <= 255:
+            create_tweet(data)
+            return {"Message": "Tweet Sent"}, 200
+        else:
+            return {"Error": "Tweet Must Be Less Than 255 Characters"}, 401
 
     def get(self):
-        pass
+        tweets = get_user_tweets()
+        if tweets is not None:
+            return tweets, 200
+        else:
+            return {"Error": "No Tweets Found"}, 401
 
     def put(self):
-        pass
+        data = request.get_json()
+        user_tweet = data['tweet']
+        if len(user_tweet) <= 255:
+            if update_tweet(data):
+                return {"Message": "Tweet Updated"}, 200
+            else:
+                return {"Error": "Tweet Could Not Be Updated"}, 401
+        else:
+            return {"Error": "Tweet Must Be Less Than 255 Characters"}, 401
 
     def delete(self):
-        pass
+        data = request.get_json()
+        if delete_tweet(data):
+            return {"Message": "Tweet Deleted"}, 200
+        else:
+            return {"Error": "Tweet Could Not Be Deleted"}, 401
 
 
 api.add_resource(Registration, '/register')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(Chat, '/chat/<string:username>')
-api.add_resource(Chat, '/tweet')
-
+api.add_resource(Tweet, '/tweet')
