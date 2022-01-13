@@ -1,6 +1,6 @@
 import datetime
 import logging
-from flask import Flask, request, session
+from flask import session
 import sqlite3
 
 conn = sqlite3.connect('database.db', check_same_thread=False)
@@ -61,12 +61,10 @@ def update_tweet(data):
 def delete_tweet(data):
     tweet_id = data['id']
     username = session.get('username')
-    print('34')
     params = (tweet_id, username)
     try:
         if username:
-            deleted = conn.execute("DELETE FROM tweets WHERE id=? AND username=?", params)
-            print(deleted)
+            conn.execute("DELETE FROM tweets WHERE id=? AND username=?", params)
             conn.commit()
             return True
 
