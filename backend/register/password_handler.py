@@ -4,7 +4,7 @@ import bcrypt
 # Password validation
 def password_check(password):
 
-    SpecialSym = ['$', '@', '#', '%', '/']
+    special_symbols = ['$', '@', '#', '%', '/']
     val = True
 
     if len(password) < 6:
@@ -27,7 +27,7 @@ def password_check(password):
         print('Password should have at least one lowercase letter')
         val = False
 
-    if not any(char in SpecialSym for char in password):
+    if not any(char in special_symbols for char in password):
         print('Password should have at least one of the symbols $@#')
         val = False
     if val:
